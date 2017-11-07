@@ -5,6 +5,8 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const qs = require('querystring');
+const db = require('./db');
 
 const app = express();
 
@@ -14,6 +16,7 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+
 
 
 
@@ -77,6 +80,36 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+
+app.get('/login', (req, res, next) => {
+  res.render('login');
+});
+
+app.post('/login', 
+(req, res, next) => {
+  console.log('this is the post request');
+});
+
+//sends to signup page
+app.get('/signup', (req, res, next) => {
+  res.render('signup');
+});
+
+//create a new user pass in table
+app.post('/signup', (req, res, next) => {
+  db.query(`SELECT * FROM users WHERE users.username = "${req.body.username}"`, function(err, results) {
+    if (results.length === 0) {
+      models.Users.create(req.body);
+      res.end();
+    } else {
+      res.redirect('/signup');
+    }
+      
+  });  
+});
+//Add routes to your Express server to process incoming POST requests. These routes should enable a user to register for a new account and for users to log in to your application. Take a look at the login.ejs and signup.ejs templates in the views directory to determine which routes you need to add.
+
+//Add the appropriate callback functions to your new routes. Add methods to your user model, as necessary, to keep your code modular (i.e., your database model methods should not receive as arguments or otherwise have access to the request or response objects).
 
 
 
