@@ -326,7 +326,7 @@ describe('', function() {
     });
   });
 
-  describe('Express Middleware', function() {
+  describe('Express middleware', function() {
     var cookieParser = require('../server/middleware/cookieParser.js');
     var createSession = require('../server/middleware/auth.js').createSession;
 
