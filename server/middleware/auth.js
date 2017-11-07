@@ -11,10 +11,23 @@ module.exports.createSession = (req, res, next) => {
     }).then( (obj) => {
       req.session = {};
       req.session['hash'] = obj.hash;
+    }).then( () => {
+      res.cookie('shortlyid', 'value');
       next();
     });
     
-  } 
+  } else {
+    session.create();
+    return new Promise((resolve, reject) => {
+      resolve(session.get({id: 2})); 
+    }).then( (obj) => {
+      req.session = {};
+      req.session['hash'] = obj.hash;
+      next();
+    });
+    
+    
+  }
   //if there are no cookies on request
     //request.session
   next();
