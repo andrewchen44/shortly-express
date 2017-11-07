@@ -1,14 +1,29 @@
+var qs = require('querystring');
+
 const parseCookies = (req, res, next) => {
-  console.log(req.cookies);
-  var body = '';
-  req.on('data', (err, chunk) => {
-    body += chunk;
-  });
-  req.on('end', () => {
-    console.log(body);
-  });
+  
+  if (req.headers.cookie) {
+    var cookie = req.headers.cookie + '';
+    if ( cookie.indexOf(';') >= 0 ) {
+      var obj = {};
+      var cookieArr = cookie.split(';');
+      for (var i = 0; i < cookieArr.length; i++) {
+        if (cookieArr[i][0] === ' ') {
+          cookieArr[i] = cookieArr[i].slice(1);
+        }
+        var pairs = cookieArr[i].split('=');
+        obj[pairs[0]] = pairs[1];
+      }
+    } else {
+      var pairs = cookie.split('=');
+      var obj = {};
+      obj[pairs[0]] = pairs[1];
+      req.cookies = obj;
+    }
+    req.cookies = obj;   
+  }
+
+  next();
 };
 
 module.exports = parseCookies;
-
-// In middleware/cookieParser.js, write a middleware function that will access the cookies on an incoming request, parse them into an object, and assign this object to a cookies property on the request.

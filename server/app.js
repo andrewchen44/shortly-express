@@ -102,11 +102,8 @@ app.post('/login',
         } else {
           res.redirect('/');
         }
-        
-      });
-        
+      }); 
     }
-      
   });  
 
 });
@@ -125,13 +122,8 @@ app.post('/signup', (req, res, next) => {
     } else {
       res.redirect('/signup');
     }
-      
   });  
 });
-//Add routes to your Express server to process incoming POST requests. These routes should enable a user to register for a new account and for users to log in to your application. Take a look at the login.ejs and signup.ejs templates in the views directory to determine which routes you need to add.
-
-//Add the appropriate callback functions to your new routes. Add methods to your user model, as necessary, to keep your code modular (i.e., your database model methods should not receive as arguments or otherwise have access to the request or response objects).
-
 
 
 /************************************************************/
