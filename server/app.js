@@ -8,6 +8,7 @@ const models = require('./models');
 const qs = require('querystring');
 const db = require('./db');
 
+
 const app = express();
 
 app.set('views', `${__dirname}/views`);
@@ -87,7 +88,27 @@ app.get('/login', (req, res, next) => {
 
 app.post('/login', 
 (req, res, next) => {
-  console.log('this is the post request');
+  db.query(`SELECT * FROM users WHERE users.username = "${req.body.username}"`, function(err, results) {
+    if (results.length === 0) {
+      res.redirect('/login');
+    } else {
+      //check for correct password
+      db.query(`SELECT users.* FROM users WHERE users.username = "${req.body.username}"`, function(err, results) {
+        let actual = results[0].password;
+        let salt = results[0].salt;
+        let attempted = req.body.password;
+        if (!utils.compareHash(attempted, actual, salt)) {
+          res.redirect('/login');
+        } else {
+          res.redirect('/');
+        }
+        
+      });
+        
+    }
+      
+  });  
+
 });
 
 //sends to signup page
@@ -100,7 +121,7 @@ app.post('/signup', (req, res, next) => {
   db.query(`SELECT * FROM users WHERE users.username = "${req.body.username}"`, function(err, results) {
     if (results.length === 0) {
       models.Users.create(req.body);
-      res.end();
+      res.redirect('/');
     } else {
       res.redirect('/signup');
     }
