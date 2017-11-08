@@ -23,7 +23,13 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/', 
 (req, res) => {
-  res.render('index');
+
+  return new Promise ((resolve, reject) => {
+    resolve(Auth.createSession(req, res, function(){}))
+  }).then( () => {
+    res.render('index');
+  });
+
 });
 
 app.get('/create', 
@@ -117,8 +123,14 @@ app.get('/signup', (req, res, next) => {
 app.post('/signup', (req, res, next) => {
   db.query(`SELECT * FROM users WHERE users.username = "${req.body.username}"`, function(err, results) {
     if (results.length === 0) {
-      models.Users.create(req.body);
-      res.redirect('/');
+      return new Promise((resolve, reject) => {
+        resolve(models.Users.create(req.body));
+      }).then( (promise) => {
+        req.userId = promise.insertId;
+        return Auth.createSession(req, res, next);
+      }).then( () => {
+        res.redirect('/');
+      });
     } else {
       res.redirect('/signup');
     }
